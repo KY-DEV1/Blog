@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Pribadi Saya</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h1>MyBlog</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home">Beranda</a></li>
+                <li><a href="#about">Tentang</a></li>
+                <li><a href="#blog">Blog</a></li>
+                <li><a href="#contact">Kontak</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Selamat Datang di Blog Saya</h1>
+            <p>Tempat berbagi cerita, pemikiran, dan pengalaman</p>
+            <button class="cta-button" onclick="scrollToSection('blog')">Baca Blog</button>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2>Tentang Saya</h2>
+            <div class="about-content">
+                <div class="about-image">
+                    <img src="https://via.placeholder.com/300x300" alt="Foto Profil">
+                </div>
+                <div class="about-text">
+                    <h3>Halo, saya John Doe</h3>
+                    <p>Saya adalah seorang web developer yang passionate dalam menciptakan solusi digital. Blog ini adalah tempat saya berbagi pengetahuan, pengalaman, dan cerita sehari-hari.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Section -->
+    <section id="blog" class="blog">
+        <div class="container">
+            <h2>Blog Terbaru</h2>
+            <div class="blog-filters">
+                <button class="filter-btn active" data-filter="all">Semua</button>
+                <button class="filter-btn" data-filter="teknologi">Teknologi</button>
+                <button class="filter-btn" data-filter="pengembangan-diri">Pengembangan Diri</button>
+                <button class="filter-btn" data-filter="travel">Travel</button>
+            </div>
+            <div id="posts-container" class="posts-grid">
+                <!-- Posts akan dimuat di sini -->
+            </div>
+            <div class="admin-panel" id="adminPanel">
+                <h3>Admin Panel</h3>
+                <button class="btn" onclick="showPostForm()">Tambah Post Baru</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2>Kontak Saya</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>Mari Terhubung</h3>
+                    <p><i class="fas fa-envelope"></i> email@example.com</p>
+                    <p><i class="fas fa-phone"></i> +62 812-3456-7890</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Jakarta, Indonesia</p>
+                </div>
+                <form class="contact-form" id="contactForm">
+                    <input type="text" placeholder="Nama" required>
+                    <input type="email" placeholder="Email" required>
+                    <textarea placeholder="Pesan" rows="5" required></textarea>
+                    <button type="submit">Kirim Pesan</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2023 Blog Pribadi Saya. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Modal untuk form post -->
+    <div id="postModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closePostForm()">&times;</span>
+            <h2 id="modalTitle">Tambah Post Baru</h2>
+            <form id="postForm">
+                <input type="text" id="postTitle" placeholder="Judul" required>
+                <textarea id="postContent" placeholder="Konten" rows="10" required></textarea>
+                <input type="text" id="postExcerpt" placeholder="Ringkasan" required>
+                <input type="text" id="postTags" placeholder="Tag (pisahkan dengan koma)">
+                <input type="text" id="postImage" placeholder="URL Gambar">
+                <input type="hidden" id="postId">
+                <div class="form-actions">
+                    <button type="submit" id="submitBtn">Simpan</button>
+                    <button type="button" onclick="closePostForm()">Batal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+  </html>
