@@ -80,26 +80,32 @@
     </section>
 
     <!-- Contact Section -->
-    <section id="contact" class="contact">
-        <div class="container">
-            <h2>Kontak Saya</h2>
-            <div class="contact-content">
-                <div class="contact-info">
-                    <h3>Mari Terhubung</h3>
-                    <p><i class="fas fa-envelope"></i> email@example.com</p>
-                    <p><i class="fas fa-phone"></i> +62 812-3456-7890</p>
-                    <p><i class="fas fa-map-marker-alt"></i> Jakarta, Indonesia</p>
-                </div>
-                <form class="contact-form" id="contactForm">
-                    <input type="text" placeholder="Nama" required>
-                    <input type="email" placeholder="Email" required>
-                    <textarea placeholder="Pesan" rows="5" required></textarea>
-                    <button type="submit">Kirim Pesan</button>
-                </form>
+<section id="contact" class="contact">
+    <div class="container">
+        <h2>Kontak Saya</h2>
+        <div class="contact-content">
+            <div class="contact-info">
+                <h3>Mari Terhubung</h3>
+                <p><i class="fas fa-envelope"></i> email@example.com</p>
+                <p><i class="fas fa-phone"></i> +62 812-3456-7890</p>
+                <p><i class="fas fa-map-marker-alt"></i> Jakarta, Indonesia</p>
             </div>
+            
+            <!-- Formspree Form -->
+            <form class="contact-form" action="https://formspree.io/f/your-form-id" method="POST" id="contactForm">
+                <input type="text" name="name" placeholder="Nama" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <textarea name="message" placeholder="Pesan" rows="5" required></textarea>
+                <button type="submit">Kirim Pesan</button>
+                
+                <!-- Formspree hidden fields (optional) -->
+                <input type="hidden" name="_subject" value="Pesan baru dari blog!">
+                <input type="text" name="_gotcha" style="display:none">
+            </form>
         </div>
-    </section>
-
+    </div>
+</section>
+    
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -130,4 +136,5 @@
     <script src="script.js"></script>
 </body>
   </html>
+
 
