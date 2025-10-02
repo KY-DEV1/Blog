@@ -25,15 +25,42 @@ function setupEventListeners() {
     });
   });
 
-  // Contact form
-  document.getElementById('contactForm').addEventListener('submit', function(e) {
+  // Formspree form handling
+document.getElementById('contactForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-    alert('Pesan berhasil dikirim! (Simulasi)');
-    this.reset();
-  });
-
-  // Post form
-  document.getElementById('postForm').addEventListener('submit', handlePostSubmit);
+    
+    const form = this;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    
+    // Show loading state
+    submitBtn.textContent = 'Mengirim...';
+    submitBtn.disabled = true;
+    
+    try {
+        const response = await fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form),
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            alert('Pesan berhasil dikirim! 🎉');
+            form.reset();
+        } else {
+            throw new Error('Gagal mengirim pesan');
+        }
+    } catch (error) {
+        alert('Maaf, terjadi error. Silakan coba lagi atau hubungi via email langsung.');
+        console.error('Formspree error:', error);
+    } finally {
+        // Reset button state
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    }
+});
 
   // Hamburger menu untuk mobile
   document.querySelector('.hamburger').addEventListener('click', function() {
@@ -99,7 +126,131 @@ function displayPosts(postsToDisplay) {
   `).join('');
 }
 
-// ... (fungsi lainnya tetap sama seperti sebelumnya)
+// Filter posts by category
+function filterPosts() {
+    if (currentFilter === 'all') {
+        displayPosts(posts);
+    } else {
+        const filteredPosts = posts.filter(post => 
+            post.tags && post.tags.includes(currentFilter)
+        );
+        displayPosts(filteredPosts);
+    }
+}
+
+// Show post form modal
+function showPostForm(postId = null) {
+    const modal = document.getElementById('postModal');
+    const title = document.getElementById('modalTitle');
+    const form = document.getElementById('postForm');
+    
+    if (postId) {
+        title.textContent = 'Edit Post';
+        const post = posts.find(p => (p._id || p.id) === postId);
+        if (post) {
+            document.getElementById('postId').value = postId;
+            document.getElementById('postTitle').value = post.title;
+            document.getElementById('postContent').value = post.content;
+            document.getElementById('postExcerpt').value = post.excerpt;
+            document.getElementById('postTags').value = post.tags ? post.tags.join(', ') : '';
+            document.getElementById('postImage').value = post.featuredImage || '';
+        }
+    } else {
+        title.textContent = 'Tambah Post Baru';
+        form.reset();
+        document.getElementById('postId').value = '';
+    }
+    
+    modal.style.display = 'block';
+}
+
+// Close post form modal
+function closePostForm() {
+    document.getElementById('postModal').style.display = 'none';
+}
+
+// Handle post form submission
+async function handlePostSubmit(e) {
+    e.preventDefault();
+    
+    const formData = {
+        title: document.getElementById('postTitle').value,
+        content: document.getElementById('postContent').value,
+        excerpt: document.getElementById('postExcerpt').value,
+        tags: document.getElementById('postTags').value.split(',').map(tag => tag.trim()),
+        featuredImage: document.getElementById('postImage').value || undefined
+    };
+
+    const postId = document.getElementById('postId').value;
+    
+    try {
+        let response;
+        if (postId) {
+            // Update existing post
+            response = await fetch(`${API_URL}/posts/${postId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+        } else {
+            // Create new post
+            response = await fetch(`${API_URL}/posts`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+        }
+
+        if (response.ok) {
+            closePostForm();
+            loadPosts(); // Reload posts
+        } else {
+            alert('Error menyimpan post');
+        }
+    } catch (error) {
+        console.error('Error saving post:', error);
+        alert('Error menyimpan post');
+    }
+}
+
+// Delete post
+async function deletePost(postId) {
+    if (!confirm('Apakah Anda yakin ingin menghapus post ini?')) return;
+    
+    try {
+        const response = await fetch(`${API_URL}/posts/${postId}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            loadPosts(); // Reload posts
+        } else {
+            alert('Error menghapus post');
+        }
+    } catch (error) {
+        console.error('Error deleting post:', error);
+        alert('Error menghapus post');
+    }
+}
+
+// Edit post
+function editPost(postId) {
+    showPostForm(postId);
+}
+
+// Utility functions
+function formatDate(dateString) {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString('id-ID', options);
+}
+
+function scrollToSection(sectionId) {
+    document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+}
 
 // Loading states
 function showLoading() {
@@ -136,3 +287,4 @@ function getSamplePosts() {
     }
   ];
 }
+
