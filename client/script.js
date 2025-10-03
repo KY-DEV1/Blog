@@ -288,3 +288,204 @@ function getSamplePosts() {
   ];
 }
 
+// Auth state
+let currentUser = null;
+let authToken = null;
+
+// Check if user is logged in on page load
+document.addEventListener('DOMContentLoaded', function() {
+    checkAuthState();
+    loadPosts();
+    setupEventListeners();
+});
+
+// Auth functions
+async function login() {
+    const username = document.getElementById('loginUsername').value;
+    const password = document.getElementById('loginPassword').value;
+
+    if (!username || !password) {
+        alert('Please enter username and password');
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/auth/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            authToken = data.token;
+            currentUser = data.user;
+            localStorage.setItem('authToken', authToken);
+            localStorage.setItem('user', JSON.stringify(currentUser));
+            updateAuthUI();
+            alert('Login successful! 🎉');
+        } else {
+            alert(data.message || 'Login failed');
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        alert('Login failed');
+    }
+}
+
+async function register() {
+    const username = document.getElementById('regUsername').value;
+    const password = document.getElementById('regPassword').value;
+
+    if (!username || !password) {
+        alert('Please enter username and password');
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/auth/register`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert('Registration successful! Please login.');
+            document.getElementById('registerForm').style.display = 'none';
+        } else {
+            alert(data.message || 'Registration failed');
+        }
+    } catch (error) {
+        console.error('Registration error:', error);
+        alert('Registration failed');
+    }
+}
+
+function logout() {
+    authToken = null;
+    currentUser = null;
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('user');
+    updateAuthUI();
+    alert('Logged out successfully');
+}
+
+function showRegister() {
+    document.getElementById('registerForm').style.display = 'block';
+}
+
+function checkAuthState() {
+    const savedToken = localStorage.getItem('authToken');
+    const savedUser = localStorage.getItem('user');
+    
+    if (savedToken && savedUser) {
+        authToken = savedToken;
+        currentUser = JSON.parse(savedUser);
+        updateAuthUI();
+    }
+}
+
+function updateAuthUI() {
+    const loginForm = document.querySelector('.login-form');
+    const adminInfo = document.getElementById('adminInfo');
+    const adminPanel = document.getElementById('adminPanel');
+
+    if (currentUser && currentUser.isAdmin) {
+        loginForm.style.display = 'none';
+        adminInfo.style.display = 'block';
+        adminPanel.style.display = 'block';
+        document.getElementById('adminName').textContent = currentUser.username;
+    } else {
+        loginForm.style.display = 'block';
+        adminInfo.style.display = 'none';
+        adminPanel.style.display = 'none';
+    }
+}
+
+// Modify existing functions to include auth headers
+async function handlePostSubmit(e) {
+    e.preventDefault();
+    
+    if (!currentUser || !currentUser.isAdmin) {
+        alert('You need to be logged in as admin to post!');
+        return;
+    }
+
+    const formData = {
+        title: document.getElementById('postTitle').value,
+        content: document.getElementById('postContent').value,
+        excerpt: document.getElementById('postExcerpt').value,
+        tags: document.getElementById('postTags').value.split(',').map(tag => tag.trim()),
+        featuredImage: document.getElementById('postImage').value || undefined
+    };
+
+    const postId = document.getElementById('postId').value;
+    
+    try {
+        let response;
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`
+        };
+
+        if (postId) {
+            response = await fetch(`${API_URL}/posts/${postId}`, {
+                method: 'PUT',
+                headers: headers,
+                body: JSON.stringify(formData)
+            });
+        } else {
+            response = await fetch(`${API_URL}/posts`, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(formData)
+            });
+        }
+
+        if (response.ok) {
+            closePostForm();
+            loadPosts();
+        } else {
+            const error = await response.json();
+            alert(error.message || 'Error menyimpan post');
+        }
+    } catch (error) {
+        console.error('Error saving post:', error);
+        alert('Error menyimpan post');
+    }
+}
+
+async function deletePost(postId) {
+    if (!currentUser || !currentUser.isAdmin) {
+        alert('You need to be logged in as admin to delete posts!');
+        return;
+    }
+
+    if (!confirm('Apakah Anda yakin ingin menghapus post ini?')) return;
+    
+    try {
+        const response = await fetch(`${API_URL}/posts/${postId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        });
+
+        if (response.ok) {
+            loadPosts();
+        } else {
+            const error = await response.json();
+            alert(error.message || 'Error menghapus post');
+        }
+    } catch (error) {
+        console.error('Error deleting post:', error);
+        alert('Error menghapus post');
+    }
+        }
