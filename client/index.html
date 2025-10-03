@@ -106,6 +106,31 @@
     </div>
 </section>
     
+<!-- Add this before the footer -->
+<section id="admin" class="admin-login">
+    <div class="container">
+        <h2>Admin Login</h2>
+        <div class="login-form">
+            <input type="text" id="loginUsername" placeholder="Username">
+            <input type="password" id="loginPassword" placeholder="Password">
+            <button onclick="login()">Login</button>
+            <button onclick="showRegister()">Register Admin</button>
+        </div>
+        
+        <div id="registerForm" class="register-form" style="display: none;">
+            <h3>Register Admin (First Time Only)</h3>
+            <input type="text" id="regUsername" placeholder="Username">
+            <input type="password" id="regPassword" placeholder="Password">
+            <button onclick="register()">Register</button>
+        </div>
+        
+        <div id="adminInfo" class="admin-info" style="display: none;">
+            <h3>Welcome, <span id="adminName"></span>! 🎉</h3>
+            <button onclick="logout()">Logout</button>
+        </div>
+    </div>
+</section>
+    
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -136,6 +161,7 @@
     <script src="script.js"></script>
 </body>
   </html>
+
 
 
 
